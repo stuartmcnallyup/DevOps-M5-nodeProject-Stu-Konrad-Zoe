@@ -1,57 +1,8 @@
 - hosts: deploy
   become: true
-  vars:
-    app_dir: /opt/nodeapp
-    app_port: 5000
   tasks:
     - name: Install packages
       apt:
-        name: [nodejs, git, nginx]
+        name: [nodejs, git]
         update_cache: yes
         state: present
-
-    - name: Clone app
-      git:
-        repo: https://gitlab.com/Reece-Elder/devops-m5-nodeproject.git
-        dest: "{{ app_dir }}"
-        version: main
-
-    - name: npm install
-      npm:
-        path: "{{ app_dir }}"
-
-    - name: Create systemd service
-      copy:
-        dest: /etc/systemd/system/nodeapp.service
-        content: |
-          [Unit]
-          Description=Node app
-          After=network.target
-
-          [Service]
-          WorkingDirectory={{ app_dir }}
-          ExecStart=/usr/bin/node index.js
-          Restart=always
-
-          [Install]
-          WantedBy=multi-user.target
-
-    - name: Nginx proxy port 80 to app
-      copy:
-        dest: /etc/nginx/sites-available/default
-        content: |
-          server {
-            listen 80;
-            location / {
-              proxy_pass http://127.0.0.1:{{ app_port }};
-              proxy_set_header Host $host;
-            }
-          }
-
-    - name: Start services
-      systemd:
-        name: "{{ item }}"
-        state: restarted
-        enabled: yes
-        daemon_reload: yes
-      loop: [nodeapp, nginx]
