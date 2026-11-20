@@ -11,6 +11,7 @@
       get_url:
         url: https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
         dest: /usr/share/keyrings/jenkins-keyring.asc
+        force: true
 
     - name: Add Jenkins repo
       apt_repository:
