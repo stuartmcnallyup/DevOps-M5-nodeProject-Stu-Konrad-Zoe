@@ -35,7 +35,7 @@ module "vpc" {
 module "subnet01" {
   source = "./SUBNET"
   vpc_id = module.vpc.vpc_id
-  cidr_block = "10.0.1.0/23"
+  cidr_block = "10.0.4.0/23"
   availability_zone = "eu-west-2a"
   route_table_id = module.vpc.route_table_id
 }
