@@ -4,14 +4,9 @@
     app_dir: /opt/nodeapp
     app_port: 5000
   tasks:
-    - name: Add NodeSource repo
-      shell: curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
-      args:
-        creates: /etc/apt/sources.list.d/nodesource.list
-
     - name: Install packages
       apt:
-        name: [nodejs, npm, git, nginx]
+        name: [nodejs, git, nginx]
         update_cache: yes
         state: present
 
@@ -56,4 +51,7 @@
     - name: Start services
       systemd:
         name: "{{ item }}"
-        state:
+        state: restarted
+        enabled: yes
+        daemon_reload: yes
+      loop: [nodeapp, nginx]
