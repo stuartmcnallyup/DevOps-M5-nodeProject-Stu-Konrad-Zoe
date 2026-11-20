@@ -3,24 +3,27 @@
   tasks:
     - name: Install base packages
       apt:
-        name: [unzip, wget, curl, docker.io, openjdk-17-jre]
+        name: [unzip, wget, curl, fontconfig, docker.io, openjdk-21-jre]
         update_cache: yes
         state: present
 
     - name: Add Jenkins apt key
       get_url:
-        url: https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+        url: https://pkg.jenkins.io/debian-stable/jenkins.io-2026.key
         dest: /usr/share/keyrings/jenkins-keyring.asc
+        mode: '0644'
+        force: true
 
-    - name: Add Jenkins repo
-      apt_repository:
+    - name: Add Jenkins apt repository
+      ansible.builtin.apt_repository:
         repo: "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/"
+        filename: jenkins
         state: present
+        update_cache: true
 
     - name: Install Jenkins
       apt:
         name: jenkins
-        update_cache: yes
         state: present
 
     - name: Add jenkins to sudo and docker groups
