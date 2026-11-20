@@ -1,0 +1,43 @@
+- hosts: ci
+  become: true
+  tasks:
+    - name: Install base packages
+      apt:
+        name: [unzip, wget, curl, docker.io, openjdk-17-jre]
+        update_cache: yes
+        state: present
+
+    - name: Add Jenkins apt key
+      get_url:
+        url: https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+        dest: /usr/share/keyrings/jenkins-keyring.asc
+
+    - name: Add Jenkins repo
+      apt_repository:
+        repo: "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/"
+        state: present
+
+    - name: Install Jenkins
+      apt:
+        name: jenkins
+        update_cache: yes
+        state: present
+
+    - name: Add jenkins to sudo and docker groups
+      user:
+        name: jenkins
+        groups: sudo,docker
+        append: yes
+
+    - name: Add ubuntu user to docker group
+      user:
+        name: ubuntu
+        groups: docker
+        append: yes
+
+    - name: Start and enable services
+      systemd:
+        name: "{{ item }}"
+        state: restarted
+        enabled: yes
+      loop: [docker, jenkins]
