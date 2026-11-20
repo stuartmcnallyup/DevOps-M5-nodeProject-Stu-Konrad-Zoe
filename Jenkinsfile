@@ -16,7 +16,7 @@ pipeline {
         stage('Run container') {
             steps {
                 sh 'docker rm -f nodeapp || true'
-                sh 'docker run -d --name nodeapp --restart unless-stopped -p 80:5000 $IMAGE:latest'
+                sh 'docker run -d --name nodeapp --restart unless-stopped -p 5000:5000 $IMAGE:latest'
                 sh 'docker ps --filter name=nodeapp'
             }
         }
